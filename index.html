@@ -14,14 +14,16 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-sm-4 col-offset-sm-4">
-			<div id="reader" style="width:450px; height: 450px;"></div>
+		<div class="col-sm-6 col-sm-offset-2">
+			<div class="well">
+				<div id="reader" style="width:100%; height: 450px;"></div>
 
-			<div id="info">
-				Some info here....
+				<div id="info">
+					Some info here....
+				</div>
+
+				<ul id="tix"></ul>
 			</div>
-
-			<div id="tix"></div>
 		</div>	
 	</div>
 
@@ -43,7 +45,7 @@
 			allTickets = data;
 
 			$.each(data, function(i, d) {
-				$('#tix').append('<p data-ticketcode="' + d.ticketcode.toUpperCase() + '">' + d.ticketcode.toUpperCase() +' </p>');
+				$('#tix').append('<li data-ticketcode="' + d.ticketcode.toUpperCase() + '">' + d.ticketcode.toUpperCase() +' </li>');
 			});
 
 
