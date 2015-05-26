@@ -42,14 +42,14 @@
 		$.getJSON('test.json', function(data) {
 
 			localStorage.setItem('allTickets', JSON.stringify(data));
-			allTickets = data;
+
+            soldTickets = localStorage['soldTickets'];
+			
+            allTickets = data;
 
 			$.each(data, function(i, d) {
 				$('#tix').append('<li data-ticketcode="' + d.ticketcode.toUpperCase() + '">' + d.ticketcode.toUpperCase() +' </li>');
 			});
-
-
-			soldTickets = localStorage['soldTickets'];
 
 			if (soldTickets != null) {
 				soldTickets = JSON.parse(soldTickets);
@@ -66,7 +66,15 @@
 
 			markAsSold({ticketcode: data});
 
-			alert('Myyty lippukoodi: ' + data);
+            tickets = JSON.parse(localStorage['allTickets']);
+            
+            var info = $.grep(tickets, function(d, w) {
+                if (d.ticketcode.toUpperCase() == data) {
+                    return d;
+                }
+            });
+
+			alert('OK myydä. Lippukoodi: ' + data + ' / ' + info[0]['etunimi'] + ' ' + info[0]['sukunimi']);
 			sold = localStorage.getItem('soldTickets');
 
 			if (sold == null) {
@@ -76,13 +84,10 @@
 			} else {
 				sold = JSON.parse(localStorage['soldTickets']);
 				sold.push({ticketcode: data});
-
 			}
 
 			localStorage['soldTickets'] = JSON.stringify(sold);
-
 		}
-
 
 		function markAsSold(data) {
 			$('#tix').find('[data-ticketcode="' + data.ticketcode + '"]').css('color','red').append(' _SOLD_ ');
