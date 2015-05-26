@@ -1,0 +1,131 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  	<meta charset="utf-8">
+
+  	<title>Swaeg QR-code solutions</title>
+
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-4 col-offset-sm-4">
+			<div id="reader" style="width:450px; height: 450px;"></div>
+
+			<div id="info">
+				Some info here....
+			</div>
+
+			<div id="tix"></div>
+		</div>	
+	</div>
+
+</div>
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+	<script src="lib/jsqrcode-combined.min.js"></script>
+	<script src="lib/html5-qrcode.js"></script>
+
+	<script>
+
+	$(document).ready(function() {
+
+		var allTickets, soldTickets;
+
+		$.getJSON('test.json', function(data) {
+
+			localStorage.setItem('allTickets', JSON.stringify(data));
+			allTickets = data;
+
+			$.each(data, function(i, d) {
+				$('#tix').append('<p data-ticketcode="' + d.ticketcode.toUpperCase() + '">' + d.ticketcode.toUpperCase() +' </p>');
+			});
+
+
+			soldTickets = localStorage['soldTickets'];
+
+			if (soldTickets != null) {
+				soldTickets = JSON.parse(soldTickets);
+
+				$.each(soldTickets, function(i, d) {
+					markAsSold(d);
+				});
+
+			}
+
+		});
+
+		function addSoldTicket(data) {
+
+			markAsSold({ticketcode: data});
+
+			alert('Myyty lippukoodi: ' + data);
+			sold = localStorage.getItem('soldTickets');
+
+			if (sold == null) {
+				sold = [{
+					ticketcode: data
+				}];
+			} else {
+				sold = JSON.parse(localStorage['soldTickets']);
+				sold.push({ticketcode: data});
+
+			}
+
+			localStorage['soldTickets'] = JSON.stringify(sold);
+
+		}
+
+
+		function markAsSold(data) {
+			$('#tix').find('[data-ticketcode="' + data.ticketcode + '"]').css('color','red').append(' _SOLD_ ');
+		}
+
+		$('#reader').html5_qrcode(
+			function(data) {
+
+				var isSold = false;
+
+				$('#info').html('Saatiin koodi: ' + data);
+
+				allTickets = localStorage.getItem('allTickets');
+				soldTickets = localStorage.getItem('soldTickets');
+
+				if (soldTickets != null) {
+
+					soldTickets = JSON.parse(localStorage.getItem('soldTickets'));
+
+					$.each(soldTickets, function(i, d) {
+						if (d.ticketcode.toUpperCase() == data) {
+							alert('Lippu on myyty jo!');
+							isSold = true;
+						}
+					});
+
+				}
+
+				if (isSold == false) {
+					addSoldTicket(data);
+				}
+
+
+			},
+			function(error) {
+			},
+			function(videoError) {
+			}
+		);
+
+
+	});
+		
+
+	</script>
+
+</body>
+</html>
