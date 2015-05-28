@@ -39,6 +39,11 @@
 
 </div>
 	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script>
+		if (typeof jQuery == 'undefined') {
+			document.write(unescape("%3Cscript src='/lib/jquery-1.11.3.min.js' type='text/javascript'%3E%3C/script%3E"));
+		}
+	</script>
 
 	<script src="lib/jsqrcode-combined.min.js"></script>
 	<script src="lib/html5-qrcode.js"></script>
