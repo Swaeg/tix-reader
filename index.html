@@ -2,21 +2,21 @@
 
 <html lang="en">
 <head>
-  	<meta charset="utf-8">
+<meta charset="utf-8">
 
-  	<title>Swaeg QR-code solutions</title>
+<title>Swaeg QR-code solutions</title>
 
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
-    <style type="text/css" media="screen">
-        .sold {
-            color: #adadad;
-            text-decoration: line-through;
-        }
-        .hilight {
-            font-size: 24px;
-        }
-    </style>
+<style type="text/css" media="screen">
+.sold {
+	color: #adadad;
+	text-decoration: line-through;
+}
+.hilight {
+	font-size: 24px;
+}
+</style>
 
 </head>
 
@@ -38,19 +38,19 @@
 	</div>
 
 </div>
-	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script>
-		if (typeof jQuery == 'undefined') {
-			document.write(unescape("%3Cscript src='/lib/jquery-1.11.3.min.js' type='text/javascript'%3E%3C/script%3E"));
-		}
-	</script>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+if (typeof jQuery == 'undefined') {
+	document.write(unescape("%3Cscript src='/lib/jquery-1.11.3.min.js' type='text/javascript'%3E%3C/script%3E"));
+}
+</script>
 
-	<script src="lib/jsqrcode-combined.min.js"></script>
-	<script src="lib/html5-qrcode.js"></script>
+<script src="lib/jsqrcode-combined.min.js"></script>
+<script src="lib/html5-qrcode.js"></script>
 
-	<script>
+<script>
 
-	$(document).ready(function() {
+$(document).ready(function() {
 
 		var allTickets, soldTickets;
 
@@ -58,9 +58,9 @@
 
 			localStorage.setItem('allTickets', JSON.stringify(data));
 
-            soldTickets = localStorage['soldTickets'];
-			
-            allTickets = data;
+			soldTickets = localStorage['soldTickets'];
+
+			allTickets = data;
 
 			$.each(data, function(i, d) {
 				$('#tix').append('<li data-ticketcode="' + d.ticketcode.toUpperCase() + '">' + d.etunimi +' ' + d.sukunimi + ' / ' + d.ticketcode.toUpperCase() + ' </li>');
@@ -72,7 +72,6 @@
 				$.each(soldTickets, function(i, d) {
 					markAsSold(d, 'sold');
 				});
-
 			}
 
 		});
@@ -81,16 +80,17 @@
 
 			markAsSold({ticketcode: data}, 'hilight');
 
-            var tickets = JSON.parse(localStorage['allTickets']);
+			var tickets = JSON.parse(localStorage['allTickets']);
 
-            var info = $.grep(tickets, function(d) {
+			var info = $.grep(tickets, function(d) {
                 if (d.ticketcode.toUpperCase() == data) {
                     return d;
                 }
-            });
+           });
 
 			alert('OK!\n\nNimi: ' + info[0]['etunimi'] + ' ' + info[0]['sukunimi'] + '\nLipputyyppi: ' + info[0]['lipputyyppi'] + '\nKoodi: ' + data );
-			var sold = localStorage.getItem('soldTickets');
+
+            var sold = localStorage.getItem('soldTickets');
 
 			if (sold == null) {
 				sold = [{
@@ -102,7 +102,11 @@
 			}
 
 			localStorage['soldTickets'] = JSON.stringify(sold);
-            markAsSold({ticketcode: data}, 'sold');
+			markAsSold({ticketcode: data}, 'sold');
+			// note the url - needs to be localhost or whereever the jsonp-server is
+			$.getJSON('http://localhost:8080/save?callback=?', {'ticket': data}, function(resdata) {
+				console.log(resdata.msg);		
+			});
 		}
 
 		function markAsSold(data, className) {
@@ -110,44 +114,37 @@
 		}
 
 		$('#reader').html5_qrcode(
-			function(data) {
+            function(data) {
+                var isSold = false;
 
-				var isSold = false;
+                $('#info').html('Saatiin koodi: ' + data);
 
-				$('#info').html('Saatiin koodi: ' + data);
+                soldTickets = localStorage.getItem('soldTickets');
 
-				soldTickets = localStorage.getItem('soldTickets');
+                if (soldTickets != null) {
+                    soldTickets = JSON.parse(localStorage.getItem('soldTickets'));
+                    $.each(soldTickets, function(i, d) {
+                        if (d.ticketcode.toUpperCase() == data) {
+                            alert('Lippu on lunastettu jo – Vedä pataan?');
+                            isSold = true;
+                        }
+                    });
+                }
 
-				if (soldTickets != null) {
+                if (isSold == false) {
+                    addSoldTicket(data);
+                }
 
-					soldTickets = JSON.parse(localStorage.getItem('soldTickets'));
-
-					$.each(soldTickets, function(i, d) {
-						if (d.ticketcode.toUpperCase() == data) {
-							alert('Lippu on lunastettu jo – Vedä pataan?');
-							isSold = true;
-						}
-					});
-
-				}
-
-				if (isSold == false) {
-					addSoldTicket(data);
-				}
-
-
-			},
-			function(error) {
-			},
-			function(videoError) {
-			}
+            },
+            function(error) {},
+            function(videoError) {}
 		);
 
 
-	});
-		
+});
 
-	</script>
+
+</script>
 
 </body>
 </html>
