@@ -15,17 +15,19 @@ var FILE = 'sold_tickets.txt';
 
 // Save to file route
 app.get('/save', function(request, response) {
-	console.log(request.query.ticket);
 	fs.appendFile(FILE, JSON.stringify(request.query.ticket) + "\r\n", function(err) {
-		if (err) { throw err; }
+		if (err) { 
+			console.log(err); 
+			return response.jsonp({'msg': "Error saving ticket code! Consult the server log."}); 
+		}
 		console.log("Saved data " + JSON.stringify(request.query.ticket) + " succesfully.");
 	});
-	return response.jsonp({'msg': "Saved!"});
+	return response.jsonp({'msg': "Ticket saved!"});
 });
 
 // Basic root route
 app.get('/', function(request, response) {
-        response.send('Ticket server online.');
+        response.send('Ticket server online. Blast your ticket jsonp to /save');
 });
 
 // Start the server
@@ -33,20 +35,22 @@ var server = app.listen(8080, function() {
 
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log("Ticket server listening at http://%s:%s", host, port);
+	console.log("Ticket server started.")
+	console.log("");
+	console.log("░░░░░░░░░▄░░░░░░░░░░░░░░▄");
+	console.log("░░░░░░░░▌▒█░░░░░░░░░░░▄▀▒▌");
+	console.log("░░░░░░░░▌▒▒█░░░░░░░░▄▀▒▒▒▐");
+	console.log("░░░░░░░▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐");
+	console.log("░░░░░▄▄▀▒░▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐");
+	console.log("░░░▄▀▒▒▒░░░▒▒▒░░░▒▒▒▀██▀▒▌");
+	console.log("░░▐▒▒▒▄▄▒▒▒▒░░░▒▒▒▒▒▒▒▀▄▒▒▌");
+	console.log("░░▌░░▌█▀▒▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐");
+	console.log("░▐░░░▒▒▒▒▒▒▒▒▌██▀▒▒░░░▒▒▒▀▄▌");
+	console.log("░▌░▒▄██▄▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▌");
+	console.log("");
+	console.log("wow much swg such tix");
+	console.log("");
+	console.log("Ticket server is listening.");
 
 });
 
-
-/* wow such node
-░░░░░░░░░▄░░░░░░░░░░░░░░▄
-░░░░░░░░▌▒█░░░░░░░░░░░▄▀▒▌
-░░░░░░░░▌▒▒█░░░░░░░░▄▀▒▒▒▐
-░░░░░░░▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐
-░░░░░▄▄▀▒░▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐
-░░░▄▀▒▒▒░░░▒▒▒░░░▒▒▒▀██▀▒▌
-░░▐▒▒▒▄▄▒▒▒▒░░░▒▒▒▒▒▒▒▀▄▒▒▌
-░░▌░░▌█▀▒▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐
-░▐░░░▒▒▒▒▒▒▒▒▌██▀▒▒░░░▒▒▒▀▄▌
-░▌░▒▄██▄▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▌ 
-*/
